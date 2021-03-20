@@ -76,9 +76,10 @@ Todo
     - [x] Axis hysteresis
     - [x] Full: flap 30. Button to extend further to flap 40.
       - [x] Or better: read landing flap from FMC! (see xchecklist)
-- [ ] Gear
-  - [ ] 737
-    - [ ] Move to off after retraction.
-- [ ] Parking brake
-  - [ ] 737
-    - [ ] On and off commands
+- [x] Gear
+  - [x] 737
+    - [x] Move to off after retraction.
+- [x] Parking brake
+  - [x] 737
+    - [x] On and off commands
+- [ ] Move relevant git-xp-zibohelper scripts here
