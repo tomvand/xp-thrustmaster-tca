@@ -22,7 +22,7 @@ if PLANE_ICAO == "B738" then
     elseif autobrake_state == AB_BTV then
       autobrake_target_state = 0
     end
-    logMsg(tostring(autobrake_target_state) .. ", " .. tostring(dr_B738_autobrake))
+    -- logMsg(tostring(autobrake_target_state) .. ", " .. tostring(dr_B738_autobrake))
     if autobrake_target_state > dr_B738_autobrake then
       command_once("laminar/B738/knob/autobrake_up")
     elseif autobrake_target_state < dr_B738_autobrake then

@@ -51,6 +51,14 @@ For instance, detent buttons are missing; autobrake disarm is missing, parking b
 [2]: Not 21: down
 [3]: Neither 22-26: disarm
 
+X-Plane axis numbers `sim/joystick/joystick_axis_values` (probably hardware dependent!)
+| Axis      | Description                   |
+| --------- | ----------------------------- |
+| 125       | Flaps (0->retract, 1->extend)
+| 126       | Throttle 2 (0->full, ~0.735->idle, 1->reverse)
+| 127       | Throttle 1 (0->full, ~0.735->idle, 1->reverse)
+| 128       | Speedbrake (0->retract, 1->extend)
+
 
 Todo
 ----
@@ -63,11 +71,11 @@ Todo
     - [ ] Change curve for speedbrake arm position
   - [ ] A320
     - [ ] Use 1/4 position for speedbrake arm
-- [ ] Flaps
-  - [ ] 737
-    - [ ] Axis hysteresis
-    - [ ] Full: flap 30. Button to extend further to flap 40.
-      - [ ] Or better: read landing flap from FMC! (see xchecklist)
+- [x] Flaps
+  - [x] 737
+    - [x] Axis hysteresis
+    - [x] Full: flap 30. Button to extend further to flap 40.
+      - [x] Or better: read landing flap from FMC! (see xchecklist)
 - [ ] Gear
   - [ ] 737
     - [ ] Move to off after retraction.
