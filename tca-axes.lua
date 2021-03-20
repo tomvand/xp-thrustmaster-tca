@@ -7,6 +7,9 @@ local axis_values = dataref_table("sim/joystick/joystick_axis_values")
 function tca_axes_on_frame()
   -- Parse throttle values
   local throttle1_raw = axis_values[TCA_AXES_START + 2]
+  if throttle1_raw < 0.0 then
+    return  -- TCA throttle not connected
+  end
   local throttle1 = 0.0
   if throttle1_raw < 0.70 then
     local throttle1 = (0.70 - throttle1_raw) / 0.70

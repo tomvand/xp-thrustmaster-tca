@@ -65,12 +65,12 @@ Todo
 - [x] Autobrake
   - [x] FwL estimate position
   - [x] Control A320 and 737 autobrake
-- [ ] Speedbrake
-  - [ ] 737
-    - [ ] Handle automatic extension (i.e. do not retract if axis is noisy)
-    - [ ] Change curve for speedbrake arm position
-  - [ ] A320
-    - [ ] Use 1/4 position for speedbrake arm
+- [x] Speedbrake
+  - [x] 737
+    - [x] Handle automatic extension (i.e. do not retract if axis is noisy)
+    - [x] Change curve for speedbrake arm position
+  - [x] A320
+    - [x] Use 1/4 position for speedbrake arm
 - [x] Flaps
   - [x] 737
     - [x] Axis hysteresis
@@ -79,3 +79,6 @@ Todo
 - [ ] Gear
   - [ ] 737
     - [ ] Move to off after retraction.
+- [ ] Parking brake
+  - [ ] 737
+    - [ ] On and off commands
