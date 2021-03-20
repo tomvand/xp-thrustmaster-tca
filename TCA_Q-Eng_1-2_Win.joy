@@ -1,0 +1,206 @@
+I
+1100 Version
+JOY
+
+OS: Windows
+
+Name: TCA Q-Eng 1&2
+
+ID: VID:0x044fPID:0x0407
+
+Display: Thrustmaster A320 Throttle 1 & 2
+
+Assignments:
+--------------------------------------------------------------
+# FORMAT FOR AXES:
+# Axis <axis number>: hidden
+# Axis <axis number>: <joy use>
+#	Valid joy uses are:
+#	 joy_use_none	joy_use_ptch	joy_use_roll
+#	 joy_use_hdng	joy_use_thro	joy_use_coll
+#	 joy_use_lbrk	joy_use_rbrk	joy_use_prop
+#	 joy_use_mixt	joy_use_heat	joy_use_flap
+#	 joy_use_vect	joy_use_swee	joy_use_sbrk
+#	 joy_use_disp	joy_use_reverse	joy_use_elev_tr
+#	 joy_use_ailn_tr	joy_use_rudd_tr	joy_use_thro1
+#	 joy_use_thro2	joy_use_thro3	joy_use_thro4
+#	 joy_use_prop1	joy_use_prop2	joy_use_prop3
+#	 joy_use_prop4	joy_use_mixt1	joy_use_mixt2
+#	 joy_use_mixt3	joy_use_mixt4	joy_use_reverse1
+#	 joy_use_reverse2	joy_use_reverse3	joy_use_reverse4
+#	 joy_use_gear	joy_use_tiller	joy_use_back_thro
+#	 joy_use_cowl_flaps	JOY_OLD_UNUSED	joy_use_view_lr
+#	 joy_use_view_ud	joy_use_view_zoom	joy_use_camera_lr
+#	 joy_use_camera_ud	joy_use_camera_zoom	joy_use_gun_lr
+#	 joy_use_gun_ud	joy_use_vr_touchpad_x	joy_use_vr_touchpad_y
+#	 joy_use_vr_trigger	joy_use_commands	joy_use_thro5
+#	 joy_use_thro6	joy_use_thro7	joy_use_thro8
+#	 joy_use_cowl_flaps1	joy_use_cowl_flaps2	joy_use_cowl_flaps3
+#	 joy_use_cowl_flaps4	joy_use_cowl_flaps5	joy_use_cowl_flaps6
+#	 joy_use_cowl_flaps7	joy_use_cowl_flaps8	joy_use_thro_vrt
+#	 joy_use_thro_hrz
+Axis 0: joy_use_flap
+Axis 1: joy_use_thro2
+Axis 1 Curve: FIXED_RANGE_TYPE beta_reverse_range FIXED_PT_0 2 FIXED_PT_1 1 ; INTERP_MODE CATMULL_ROM | 0.000000 0.000000  | 0.254098 0.166667  | 0.255098 0.333333  | 0.500000 0.500000  | 1.000000 1.000000 
+Axis 2: joy_use_thro1
+Axis 2 Curve: FIXED_RANGE_TYPE beta_reverse_range FIXED_PT_0 2 FIXED_PT_1 1 ; INTERP_MODE CATMULL_ROM | 0.000000 0.000000  | 0.254098 0.166667  | 0.255098 0.333333  | 0.500000 0.500000  | 1.000000 1.000000 
+Axis 3: joy_use_sbrk
+Axis 4: joy_use_hdng
+Axis 5: joy_use_rbrk
+Axis 6: joy_use_lbrk
+
+
+# FORMAT FOR BUTTONS:
+# Button <button number>: hidden
+# Button <button number>: <command path, like "sim/operation/quit">
+#	See X-Plane/Resources/plugins/Commands.txt for a complete list of commands
+
+Button 16: sim/flight_controls/rudder_trim_center
+Button 17: sim/flight_controls/rudder_trim_left
+Button 18: sim/flight_controls/rudder_trim_right
+
+Button 0: sim/autopilot/autothrottle_off
+Button 1: sim/autopilot/autothrottle_off
+
+# Eng 1 & 2:
+Button 2: Momentary
+Button 2: sim/starters/engage_starter_1
+Virtual Button 100: Release Button 2
+Button 100: sim/starters/shut_down_1
+Button 3: Momentary
+Button 3: sim/starters/engage_starter_2
+Virtual Button 101: Release Button 3
+Button 101: sim/starters/shut_down_2
+# White dial:
+Button 6: Momentary
+Button 7: Momentary
+Virtual Button 102: Release Button 6, Release Button 7
+Button 102: sim/none/none
+# landing gear
+Button 20: momentary
+Button 20: sim/flight_controls/landing_gear_up
+Virtual Button 103: Release Button 20
+Button 103: sim/flight_controls/landing_gear_down
+# auto brk
+Button 21: Momentary
+Button 21: sim/flight_controls/brakes_rto_auto
+Virtual Button 104: Release Button 21
+# Button 104: Hidden
+# device doesn't actually send a signal when dial is on "disarm"
+Button 104: Momentary
+Button 104: sim/flight_controls/brakes_off_auto
+Button 22: Momentary
+Button 22: sim/flight_controls/brakes_1_auto
+Virtual Button 105: Release Button 22
+Button 105: hidden
+Button 23: Momentary
+Button 23: sim/flight_controls/brakes_2_auto
+Virtual Button 106: Release Button 23
+Button 106: hidden
+Button 24: Momentary
+Button 24: sim/flight_controls/brakes_3_auto
+Virtual Button 107: Release Button 24
+Button 107: hidden
+Button 25: Momentary
+Button 25: sim/flight_controls/brakes_max_auto
+Virtual Button 108: Release Button 25
+Button 108: hidden
+
+# Park Brk
+Button 19: Momentary
+Button 19: sim/flight_controls/brakes_max
+Virtual Button 109: Release Button 19
+
+# fake "buttons" activated at throttle detents
+Button 8: hidden
+Button 9: hidden
+Button 10: hidden
+Button 12: hidden
+Button 13: hidden
+Button 14: hidden
+Button 11: hidden
+Button 15: hidden
+
+# fake "buttons" activated at speed brake detents
+Button 26: hidden
+Button 27: hidden
+Button 28: hidden
+Button 29: hidden
+Button 30: hidden
+
+View: Top
+-----------------------------------------------------------------------
+Image: Quadrant_Top.png
+
+Axis 1 (Throttle 2; y): 240 60
+Axis 2 (Throttle 1; y): 388 60
+
+# Throttle 1 red button
+Button 0: 162 63
+# Throttle 2 red button
+Button 1: 462 63
+
+Button 2 (Eng 1 on): 235 600
+Button 100 (Eng 1 off): 233 673
+Button 3 (Eng 2 on): 388 600
+Button 101 (Eng 2 off): 392 673
+
+# black square left
+Button 4: 235 755
+# black square right
+Button 5: 389 755
+
+Button 6 (Crank): 282 738
+Button 102 (Mode Norm): 310 703
+Button 7 (Ign/Start): 356 738
+
+# Button 11 (Throttle 1 simulated): 235 399
+# Button 15 (Throttle 2 simulated): 388 399
+
+View: Flap & Speedbrake
+-----------------------------------------------------------------------
+Image: QuadrantComplet_Top.png
+
+Axis 2 (Throttle 1; y): 398 570
+Axis 1 (Throttle 2; y): 652 567
+
+Button 2 (Eng 1 on): 373 947
+Button 100 (Eng 1 off): 373 1024
+Button 3 (Eng 2 on): 667 941
+Button 101 (Eng 2 off): 661 1034
+Button 4: 412 1102
+Button 5: 639 1100
+Button 6 (Crank): 472 1097
+Button 102 (Mode Norm): 523 1009
+Button 7 (Ign/Start): 586 1097
+
+# speedbrake unit
+Axis 3 (Speed Brake; y): 121 282
+
+Button 20 (Landing Gear up): 141 855
+Button 103 (Landing Gear down): 139 956
+
+Button 21 (BTV): 84 1030
+Button 22 (LO): 120 1008
+Button 23 (2): 153 992
+Button 24 (3): 191 1009
+Button 25 (HI): 206 1044
+# Button 104 (Disarm): 87 1110
+
+# flap unit
+Axis 0 (Flaps; y): 923 268
+
+# black circle
+Button 16: 843 894
+
+Button 17 (Rud Trim Left): 907 854
+Button 18 (Rud Trim Right): 987 847
+Button 19 (Park Brk): 963 1095
+
+View: Rudder Pedals
+-----------------------------------------------------------------------
+Image: TFRP-Rudder.png
+
+Axis 4 (Yaw; z): 308 246
+Axis 5 (R Toe Brake; y): 469 92
+Axis 6 (L Toe Brake; y): 230 53
