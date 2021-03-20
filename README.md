@@ -1,3 +1,9 @@
+TCA scripts
+===========
+Joystick .joy configuration file and FlyWithLua scripts for the Thrustmaster TCA Quadrant and add-on. Includes scripts for the FF A320 and Zibo 737.
+
+Notes
+-----
 **Caution: the buttons in X-Plane do not match those in Window's USB controls panel!!**
 For instance, detent buttons are missing; autobrake disarm is missing, parking brake off is missing....
   - Caused by removed options in .joy file. Probably easiest to restore this, then use FlyWithLua for logic.
