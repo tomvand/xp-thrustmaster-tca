@@ -50,3 +50,24 @@ For instance, detent buttons are missing; autobrake disarm is missing, parking b
 [1]: Neither 7 nor 8: norm
 [2]: Not 21: down
 [3]: Neither 22-26: disarm
+
+
+Todo
+----
+- [ ] Autobrake
+  - [ ] FwL estimate position
+  - [ ] Control A320 and 737 autobrake
+- [ ] Speedbrake
+  - [ ] 737
+    - [ ] Handle automatic extension (i.e. do not retract if axis is noisy)
+    - [ ] Change curve for speedbrake arm position
+  - [ ] A320
+    - [ ] Use 1/4 position for speedbrake arm
+- [ ] Flaps
+  - [ ] 737
+    - [ ] Axis hysteresis
+    - [ ] Full: flap 30. Button to extend further to flap 40.
+      - [ ] Or better: read landing flap from FMC! (see xchecklist)
+- [ ] Gear
+  - [ ] 737
+    - [ ] Move to off after retraction.
