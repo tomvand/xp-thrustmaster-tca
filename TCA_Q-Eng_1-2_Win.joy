@@ -82,29 +82,11 @@ Button 20: sim/flight_controls/landing_gear_up
 Virtual Button 103: Release Button 20
 Button 103: sim/flight_controls/landing_gear_down
 # auto brk
-Button 21: Momentary
 Button 21: sim/flight_controls/brakes_rto_auto
-Virtual Button 104: Release Button 21
-# Button 104: Hidden
-# device doesn't actually send a signal when dial is on "disarm"
-Button 104: Momentary
-Button 104: sim/flight_controls/brakes_off_auto
-Button 22: Momentary
 Button 22: sim/flight_controls/brakes_1_auto
-Virtual Button 105: Release Button 22
-Button 105: hidden
-Button 23: Momentary
 Button 23: sim/flight_controls/brakes_2_auto
-Virtual Button 106: Release Button 23
-Button 106: hidden
-Button 24: Momentary
 Button 24: sim/flight_controls/brakes_3_auto
-Virtual Button 107: Release Button 24
-Button 107: hidden
-Button 25: Momentary
 Button 25: sim/flight_controls/brakes_max_auto
-Virtual Button 108: Release Button 25
-Button 108: hidden
 
 # Park Brk
 Button 19: Momentary

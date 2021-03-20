@@ -54,9 +54,9 @@ For instance, detent buttons are missing; autobrake disarm is missing, parking b
 
 Todo
 ----
-- [ ] Autobrake
-  - [ ] FwL estimate position
-  - [ ] Control A320 and 737 autobrake
+- [x] Autobrake
+  - [x] FwL estimate position
+  - [x] Control A320 and 737 autobrake
 - [ ] Speedbrake
   - [ ] 737
     - [ ] Handle automatic extension (i.e. do not retract if axis is noisy)
