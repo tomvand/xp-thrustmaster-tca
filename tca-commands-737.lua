@@ -10,6 +10,7 @@ if PLANE_ICAO == "B738" then
     local gear_is_up = (dt_gear_deploy[0] == 0) and (dt_gear_deploy[1] == 0) and (dt_gear_deploy[2] == 0)
     if gear_should_be_reset and gear_is_up then
       command_once("laminar/B738/push_button/gear_down_one")
+      gear_should_be_reset = false
     end
   end
   do_often("tca_737_gear_up_then_off_often()")

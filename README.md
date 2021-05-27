@@ -88,4 +88,8 @@ Todo
 - [x] Parking brake
   - [x] 737
     - [x] On and off commands
+- [ ] Wiper increase/decrease (for rudder trim)
+  - [ ] A320
+  - [ ] 737
+- [ ] Betterpushback call/start / seatbelts (for rudder trim reset button)
 - [ ] Move relevant git-xp-zibohelper scripts here
