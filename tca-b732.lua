@@ -2,6 +2,7 @@ local SYNC_ALTIMETERS = true
 local fo_baro_command = "none"
 
 function tca_732_sync_altimeters()
+  if PLANE_ICAO ~= "B732" then return end -- TODO also move to aircraft framework?
   if SYNC_ALTIMETERS then
     local cpt_baro = get("FJS/732/Inst/BaroInchRoll_1D")
     local fo_baro = get("FJS/732/Inst/BaroInchRoll_2D")
@@ -31,7 +32,7 @@ do_every_frame("tca_732_sync_altimeters()")
 local speedbrake_prev = 0
 
 function tca_732_speedbrake_on_frame()
-  if aircraft == nil or aircraft.icao_type ~= "B732" then return end -- Requires aircraft.lua to be initialized
+  if tca == nil or aircraft == nil or aircraft.icao_type ~= "B732" then return end -- Requires aircraft.lua to be initialized
   -- Control speedbrake lever
   if tca.axis.speedbrake < 0.125 and speedbrake_prev ~= 0 then
     speedbrake_prev = 0
@@ -59,7 +60,7 @@ local last_target_flap = 0
 tca_732_flaps_40 = false
 
 function tca_732_flaps_on_frame()
-  if aircraft == nil or aircraft.icao_type ~= "B732" then return end -- Requires aircraft.lua to be initialized
+  if tca == nil or aircraft == nil or aircraft.icao_type ~= "B732" then return end -- Requires aircraft.lua to be initialized
   -- Control flap lever
   -- Apply hysteresis to find TCA half-detent
   local thres_incr = tca_flap_pos + 0.5 + flap_hysteresis
@@ -96,7 +97,7 @@ create_command("tca/B732/flap_40", "Flaps 40", "tca_732_flaps_40 = not tca_732_f
 local last_autobrake_state = AB_DISARM
 
 function tca_732_autobrake_on_frame()
-  if aircraft == nil or aircraft.icao_type ~= "B732" then return end -- Requires aircraft.lua to be initialized
+  if tca == nil or aircraft == nil or aircraft.icao_type ~= "B732" then return end -- Requires aircraft.lua to be initialized
   if autobrake_state ~= last_autobrake_state then
     if autobrake_state < AB_LO then
       aircraft.controls.autobrake(0)

@@ -8,8 +8,11 @@ aircraft = nil
 
 drt_gear_deploy_ratio = dataref_table("sim/flightmodel2/gear/deploy_ratio")
 
+local start_time = os.clock()
+
 
 function aircraft_keep_current()
+  if os.clock() < start_time + 1 then return end
   if aircraft == nil or PLANE_ICAO ~= aircraft.icao_type then
     -- Set up global aircraft struct
     -- Set default values
@@ -80,7 +83,135 @@ function aircraft_keep_current()
       engine = {},
       apu = {},
     }
+
+
     -- Override functions for specific aircraft
+    if PLANE_ICAO == "A321" then
+      drt_a321_lights = dataref_table("AirbusFBW/OHPLightSwitches")
+      aircraft.lights.beacon = function(state)
+        if state == "on" then
+          drt_a321_lights[0] = 1
+        elseif state == "off" then
+          drt_a321_lights[0] = 0
+        elseif state == "toggle" then
+          local current_state = aircraft.lights.beacon()
+          if current_state > 0.5 then
+            aircraft.lights.beacon("off")
+          else
+            aircraft.lights.beacon("on")
+          end
+        end
+        return drt_a321_lights[0]
+      end
+      aircraft.lights.strobe = function(state)
+        if state == "on" then
+          drt_a321_lights[7] = 2
+        elseif state == "auto" then
+          drt_a321_lights[7] = 1
+        elseif state == "off" then
+          drt_a321_lights[7] = 0
+        elseif state == "toggle" then
+          local current_state = aircraft.lights.strobe()
+          if current_state > 1.5 then
+            aircraft.lights.strobe("off")
+          else
+            aircraft.lights.strobe("on")
+          end
+        end
+        return drt_a321_lights[7]
+      end
+      aircraft.lights.landing.all = function(state)
+        if state == "on" then
+          drt_a321_lights[4] = 2
+          drt_a321_lights[5] = 2
+        elseif state == "off" then
+          drt_a321_lights[4] = 0
+          drt_a321_lights[5] = 0
+        elseif state == "toggle" then
+          local current_state = aircraft.lights.landing.all()
+          if current_state > 1.5 then
+            aircraft.lights.landing.all("off")
+          else
+            aircraft.lights.landing.all("on")
+          end
+        end
+        return drt_a321_lights[4]
+      end
+      aircraft.lights.taxi.all = function(state)
+        if state == "on" then
+          drt_a321_lights[3] = 1
+          drt_a321_lights[6] = 1
+        elseif state == "off" then
+          drt_a321_lights[3] = 0
+          drt_a321_lights[6] = 0
+        elseif state == "toggle" then
+          local current_state = aircraft.lights.taxi.all()
+          if current_state > 0.5 then aircraft.lights.taxi.all("off") else aircraft.lights.taxi.all("on") end
+        end
+        return drt_a321_lights[3]
+      end
+      aircraft.engine.antiice = function(state, engine)
+        engine = engine or "all"
+        if engine == "all" then
+          aircraft.engine.antiice(state, 1)
+          aircraft.engine.antiice(state, 2)
+        else
+          if state == "on" then
+            command_once("toliss_airbus/antiicecommands/ENG" .. engine .. "On")
+            logMsg("toliss_airbus/antiicecommands/ENG" .. engine .. "On")
+          elseif state == "off" then
+            command_once("toliss_airbus/antiicecommands/ENG" .. engine .. "Off")
+            logMsg("toliss_airbus/antiicecommands/ENG" .. engine .. "Off")
+          elseif state == "toggle" then
+            if aircraft.engine.antiice() then aircraft.engine.antiice("off") else aircraft.engine.antiice("on") end
+          end
+        end
+        return get("ckpt/lamp/119") > 0.5
+      end
+      aircraft.controls.speedbrake = function(state)
+        if state == "down" then
+          command_end("toliss_airbus/speedbrake/hold_armed")
+          set("sim/cockpit2/controls/speedbrake_ratio", 0)
+        elseif state == "arm" then
+          command_begin("toliss_airbus/speedbrake/hold_armed")
+        else
+          command_end("toliss_airbus/speedbrake/hold_armed")
+          set("sim/cockpit2/controls/speedbrake_ratio", state)
+        end
+        return get("sim/cockpit2/controls/speedbrake_ratio")
+      end
+      aircraft.apu = function(state)
+        if state == "on" then
+          command_once("toliss_airbus/apucommands/MasterOn")
+        elseif state == "off" then
+          command_once("toliss_airbus/apucommands/MasterOff")
+        elseif state == "start" then
+          command_once("toliss_airbus/apucommands/StarterOn")
+        end
+        return get("ckpt/lamp/127")
+      end
+      aircraft.controls.wiper = function(state)
+        if state == "on" then
+          set("AirbusFBW/LeftWiperSwitch", 2)
+          set("AirbusFBW/RightWiperSwitch", 2)
+        elseif state == "off" then
+          set("AirbusFBW/LeftWiperSwitch", 0)
+          set("AirbusFBW/RightWiperSwitch", 0)
+        elseif state == "incr" then
+          local next = get("AirbusFBW/LeftWiperSwitch") + 1
+          if next > 2 then next = 2 end
+          set("AirbusFBW/LeftWiperSwitch", next)
+          set("AirbusFBW/RightWiperSwitch", next)
+        elseif state == "decr" then
+          local next = get("AirbusFBW/LeftWiperSwitch") - 1
+          if next < 0 then next = 0 end
+          set("AirbusFBW/LeftWiperSwitch", next)
+          set("AirbusFBW/RightWiperSwitch", next)
+        end
+      end
+    end
+
+
     if PLANE_ICAO == "B732" then
       aircraft.lights.beacon = function(state)
         if state == "on" then
@@ -343,3 +474,30 @@ create_command("aircraft/engine/starter/off", "Engine starter: OFF", "aircraft.e
 create_command("aircraft/engine/starter/cont", "Engine starter: CONT", "aircraft.engine.starter('cont')", "", "")
 
 create_command("aircraft/engine/antiice/toggle", "Engine anti-ice: toggle", "aircraft.engine.antiice('toggle')", "", "")
+
+
+local apu_press_time = 0.0
+local APU_HOLD_TIME = 0.5  -- seconds for long press
+function aircraft_apu_toggle_press()
+  apu_press_time = os.clock()
+end
+function aircraft_apu_toggle_hold()
+  if apu_press_time and os.clock() > (apu_press_time + APU_HOLD_TIME) and aircraft.apu() > 0.5 then
+    aircraft.apu("start")
+    apu_press_time = nil
+  end
+end
+function aircraft_apu_toggle_release()
+  if apu_press_time then
+    if aircraft.apu() > 0.5 then
+      aircraft.apu("off")
+    else
+      aircraft.apu("on")
+    end
+  end
+end
+create_command("aircraft/apu/toggle",
+    "Toggle APU On/Off/Start",
+    "aircraft_apu_toggle_press()",
+    "aircraft_apu_toggle_hold()",
+    "aircraft_apu_toggle_release()")
