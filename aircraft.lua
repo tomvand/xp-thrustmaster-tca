@@ -82,6 +82,9 @@ function aircraft_keep_current()
       controls = {},
       engine = {},
       apu = {},
+      -- Misc -----------------------------------------------------------------
+      xpdr = {},
+      wxr = {},
     }
 
 
@@ -208,6 +211,43 @@ function aircraft_keep_current()
           set("AirbusFBW/LeftWiperSwitch", next)
           set("AirbusFBW/RightWiperSwitch", next)
         end
+      end
+      aircraft.xpdr = function(mode)
+        if mode == "altoff" then
+          set("AirbusFBW/XPDRTCASMode", 1)
+          set("AirbusFBW/XPDRPower", 1)
+        elseif mode == "alton" then
+          set("AirbusFBW/XPDRTCASMode", 1)
+          set("AirbusFBW/XPDRPower", 2)
+        elseif mode == "ta" then
+          set("AirbusFBW/XPDRTCASMode", 1)
+          set("AirbusFBW/XPDRPower", 3)
+        elseif mode == "tara" then
+          set("AirbusFBW/XPDRTCASMode", 1)
+          set("AirbusFBW/XPDRPower", 4)
+        else
+          set("AirbusFBW/XPDRTCASMode", 0)
+          set("AirbusFBW/XPDRPower", 0)
+        end
+        local mode_name = {"stdby", "altoff", "alton", "ta", "tara"}
+        return mode_name[get("AirbusFBW/XPDRPower") + 1]
+      end
+      aircraft.wxr = function(state)
+        if state == "on" then
+          if get("ckpt/radar/sys/anim") > 0 then
+            command_once("toliss_airbus/WXRadarSwitchLeft")
+          end
+          set("ckpt/ped/radar/pwr/anim", 2)
+        else
+          if get("ckpt/radar/sys/anim") < 1 then
+            command_once("toliss_airbus/WXRadarSwitchRight")
+          end
+          set("ckpt/ped/radar/pwr/anim", 0)
+        end
+        return get("ckpt/radar/sys/anim") ~= 1
+      end
+      aircraft.on_frame.debug = function()
+        --logMsg(get("AirbusFBW/XPDRTCASMode"))
       end
     end
 
@@ -476,7 +516,7 @@ create_command("aircraft/engine/starter/cont", "Engine starter: CONT", "aircraft
 create_command("aircraft/engine/antiice/toggle", "Engine anti-ice: toggle", "aircraft.engine.antiice('toggle')", "", "")
 
 
-local apu_press_time = 0.0
+local apu_press_time = nil
 local APU_HOLD_TIME = 0.5  -- seconds for long press
 function aircraft_apu_toggle_press()
   apu_press_time = os.clock()
@@ -501,3 +541,35 @@ create_command("aircraft/apu/toggle",
     "aircraft_apu_toggle_press()",
     "aircraft_apu_toggle_hold()",
     "aircraft_apu_toggle_release()")
+
+
+local xpdr_press_time = nil
+local XPDR_HOLD_TIME = 0.5
+function xpdr_wxr_stdby_press()
+  xpdr_press_time = os.clock()
+end
+function xpdr_wxr_stdby_hold()
+  if xpdr_press_time and os.clock() > (xpdr_press_time + XPDR_HOLD_TIME) then
+    aircraft.xpdr("stdby")
+    aircraft.wxr("off")
+    xpdr_press_time = nil
+  end
+end
+function xpdr_wxr_stdby_release()
+  if xpdr_press_time then
+    aircraft.xpdr("altoff")
+    aircraft.wxr("off")
+  end
+end
+function xpdr_wxr_tara()
+  aircraft.xpdr("tara")
+  aircraft.wxr("on")
+end
+create_command("aircraft/xpdr_wxr/stdby_altoff",
+    "Transponder ALT OFF/STDBY, WXR off",
+    "xpdr_wxr_stdby_press()",
+    "xpdr_wxr_stdby_hold()",
+    "xpdr_wxr_stdby_release()")
+create_command("aircraft/xpdr_wxr/tara",
+    "Transponder TA/RA, WXR on",
+    "xpdr_wxr_tara()", "", "")
