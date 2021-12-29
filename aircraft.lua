@@ -89,6 +89,31 @@ function aircraft_keep_current()
 
 
     -- Override functions for specific aircraft
+    if PLANE_ICAO == "A320" then
+      aircraft.lights.beacon = function(state)
+        local xplm_beacon = XPLMFindDataRef("a320/Overhead/LightBeacon")
+        if xplm_beacon ~= nil then
+          aircraft.lights.beacon = function(state)
+            if state == "on" then
+              XPLMSetDataf(xplm_beacon, 1)
+            elseif state == "toggle" then
+              local current_state = aircraft.lights.beacon()
+              if current_state then
+                aircraft.lights.beacon("off")
+              else
+                aircraft.lights.beacon("on")
+              end
+            else
+              XPLMSetDataf(xplm_beacon, 0)
+            end
+            return XPLMGetDataf(xplm_beacon)
+          end
+          return aircraft.lights.beacon(state) > 0.5
+        end
+      end
+    end
+
+
     if PLANE_ICAO == "A321" then
       drt_a321_lights = dataref_table("AirbusFBW/OHPLightSwitches")
       aircraft.lights.beacon = function(state)
@@ -98,13 +123,13 @@ function aircraft_keep_current()
           drt_a321_lights[0] = 0
         elseif state == "toggle" then
           local current_state = aircraft.lights.beacon()
-          if current_state > 0.5 then
+          if current_state then
             aircraft.lights.beacon("off")
           else
             aircraft.lights.beacon("on")
           end
         end
-        return drt_a321_lights[0]
+        return drt_a321_lights[0] > 0.5
       end
       aircraft.lights.strobe = function(state)
         if state == "on" then
@@ -115,13 +140,13 @@ function aircraft_keep_current()
           drt_a321_lights[7] = 0
         elseif state == "toggle" then
           local current_state = aircraft.lights.strobe()
-          if current_state > 1.5 then
+          if current_state then
             aircraft.lights.strobe("off")
           else
             aircraft.lights.strobe("on")
           end
         end
-        return drt_a321_lights[7]
+        return drt_a321_lights[7] > 1.5
       end
       aircraft.lights.landing.all = function(state)
         if state == "on" then
@@ -132,13 +157,13 @@ function aircraft_keep_current()
           drt_a321_lights[5] = 0
         elseif state == "toggle" then
           local current_state = aircraft.lights.landing.all()
-          if current_state > 1.5 then
+          if current_state then
             aircraft.lights.landing.all("off")
           else
             aircraft.lights.landing.all("on")
           end
         end
-        return drt_a321_lights[4]
+        return drt_a321_lights[4] > 1.5
       end
       aircraft.lights.taxi.all = function(state)
         if state == "on" then
@@ -149,9 +174,9 @@ function aircraft_keep_current()
           drt_a321_lights[6] = 0
         elseif state == "toggle" then
           local current_state = aircraft.lights.taxi.all()
-          if current_state > 0.5 then aircraft.lights.taxi.all("off") else aircraft.lights.taxi.all("on") end
+          if current_state then aircraft.lights.taxi.all("off") else aircraft.lights.taxi.all("on") end
         end
-        return drt_a321_lights[3]
+        return drt_a321_lights[3] > 0.5
       end
       aircraft.engine.antiice = function(state, engine)
         engine = engine or "all"
@@ -260,13 +285,13 @@ function aircraft_keep_current()
           set("FJS/732/lights/AntiColLightSwitch", 0)
         elseif state == "toggle" then
           local current_state = aircraft.lights.beacon()
-          if current_state > 0.5 then
+          if current_state then
             aircraft.lights.beacon("off")
           else
             aircraft.lights.beacon("on")
           end
         end
-        return get("FJS/732/lights/AntiColLightSwitch")
+        return get("FJS/732/lights/AntiColLightSwitch") > 0.5
       end
       aircraft.lights.strobe = function(state)
         if state == "on" then
@@ -275,13 +300,13 @@ function aircraft_keep_current()
           set("FJS/732/lights/StrobeLightSwitch", 0)
         elseif state == "toggle" then
           local current_state = aircraft.lights.strobe()
-          if current_state > 0.5 then
+          if current_state then
             aircraft.lights.strobe("off")
           else
             aircraft.lights.strobe("on")
           end
         end
-        return get("FJS/732/lights/StrobeLightSwitch")
+        return get("FJS/732/lights/StrobeLightSwitch") > 0.5
       end
       aircraft.lights.landing.all = function(state)
         if state == "on" then
@@ -296,13 +321,13 @@ function aircraft_keep_current()
           set("FJS/732/lights/OutBoundLLightSwitch2", 0)
         elseif state == "toggle" then
           local current_state = aircraft.lights.landing.all()
-          if current_state > 1.5 then
+          if current_state then
             aircraft.lights.landing.all("off")
           else
             aircraft.lights.landing.all("on")
           end
         end
-        return get("FJS/732/lights/OutBoundLLightSwitch1")
+        return get("FJS/732/lights/OutBoundLLightSwitch1") > 1.5
       end
       aircraft.lights.taxi.all = function(state)
         if state == "on" then
@@ -315,9 +340,9 @@ function aircraft_keep_current()
           set("FJS/732/lights/RunwayTurnoffSwitch2", 0)
         elseif state == "toggle" then
           local current_state = aircraft.lights.taxi.all()
-          if current_state > 0.5 then aircraft.lights.taxi.all("off") else aircraft.lights.taxi.all("on") end
+          if current_state then aircraft.lights.taxi.all("off") else aircraft.lights.taxi.all("on") end
         end
-        return get("FJS/732/lights/TaxiLightSwitch")
+        return get("FJS/732/lights/TaxiLightSwitch") > 0.5
       end
       aircraft.autopilot.engage = function()
         if get("FJS/732/Autopilot/APRollEngageSwitch") < 0.5 then
