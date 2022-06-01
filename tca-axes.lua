@@ -12,17 +12,17 @@ function tca_axes_on_frame()
   end
   local throttle1 = 0.0
   if throttle1_raw < 0.70 then
-    local throttle1 = (0.70 - throttle1_raw) / 0.70
+    throttle1 = (0.70 - throttle1_raw) / 0.70
   elseif throttle1_raw > 0.80 then
-    local throttle1 = (throttle1_raw - 0.80) / 0.20
+    throttle1 = (0.80 - throttle1_raw) / 0.20
   end
   
   local throttle2_raw = axis_values[TCA_AXES_START + 1]
   local throttle2 = 0.0
   if throttle2_raw < 0.70 then
-    local throttle2 = (0.70 - throttle2_raw) / 0.70
+    throttle2 = (0.70 - throttle2_raw) / 0.70
   elseif throttle2_raw > 0.80 then
-    local throttle2 = (throttle2_raw - 0.80) / 0.20
+    throttle2 = (0.80 - throttle2_raw) / 0.20
   end
 
   -- Share axis values with other lua scripts

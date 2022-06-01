@@ -1,0 +1,20 @@
+{
+  "Lua.diagnostics.globals": [
+    "XPLMSetDataf",
+    "XPLMGetDataf",
+    "PLANE_ICAO",
+    "dataref_table",
+    "command_end",
+    "command_once",
+    "logMsg",
+    "set",
+    "command_begin",
+    "get",
+    "XPLMFindDataRef",
+    "create_command",
+    "do_every_frame"
+  ],
+  "Lua.diagnostics.disable": [
+    "lowercase-global"
+  ]
+}
