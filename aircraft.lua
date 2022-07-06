@@ -593,6 +593,234 @@ function aircraft_keep_current()
     end
 
 
+    if PLANE_ICAO == "A346" then
+      aircraft.a346 = {
+        drt_lights = dataref_table("AirbusFBW/OHPLightSwitches"),
+        drt_seat = dataref_table("AirbusFBW/ATA25SeatSliders"),
+      }
+      aircraft.a346.drt_seat[1] = 1.0
+      aircraft.lights.beacon = function(state)
+        if state == "on" then
+          command_once("toliss_airbus/lightcommands/BeaconOn")
+        elseif state == "off" then
+          command_once("toliss_airbus/lightcommands/BeaconOff")
+        elseif state == "toggle" then
+          command_once("toliss_airbus/lightcommands/BeaconToggle")
+        end
+        return get("sim/cockpit2/switches/beacon_on") > 0.5
+      end
+      aircraft.lights.strobe = function(state)
+        if state == "on" then
+          aircraft.a346.drt_lights[7] = 2
+        elseif state == "auto" then
+          aircraft.a346.drt_lights[7] = 1
+        elseif state == "off" then
+          aircraft.a346.drt_lights[7] = 0
+        elseif state == "toggle" then
+          local current_state = aircraft.lights.strobe()
+          if current_state then
+            aircraft.lights.strobe("off")
+          else
+            aircraft.lights.strobe("on")
+          end
+        end
+        return aircraft.a346.drt_lights[7] > 1.5
+      end
+      aircraft.lights.landing.all = function(state)
+        if state == "on" then
+          aircraft.a346.drt_lights[4] = 1
+        elseif state == "off" then
+          aircraft.a346.drt_lights[4] = 0
+        elseif state == "toggle" then
+          local current_state = aircraft.lights.landing.all()
+          if current_state then
+            aircraft.lights.landing.all("off")
+          else
+            aircraft.lights.landing.all("on")
+          end
+        end
+        return aircraft.a346.drt_lights[4] > 0.5
+      end
+      aircraft.lights.taxi.all = function(state)
+        if state == "on" then
+          aircraft.a346.drt_lights[3] = 1
+          aircraft.a346.drt_lights[6] = 1
+        elseif state == "off" then
+          aircraft.a346.drt_lights[3] = 0
+          aircraft.a346.drt_lights[6] = 0
+        elseif state == "toggle" then
+          local current_state = aircraft.lights.taxi.all()
+          if current_state then aircraft.lights.taxi.all("off") else aircraft.lights.taxi.all("on") end
+        end
+        return aircraft.a346.drt_lights[3] > 0.5
+      end
+      aircraft.engine.antiice = function(state, engine)
+        engine = engine or "all"
+        if state == "toggle" then
+          if aircraft.engine.antiice(nil, engine) then
+            state = "off"
+          else
+            state = "on"
+          end
+        end
+        if engine == "all" then
+          aircraft.engine.antiice(state, 1)
+          aircraft.engine.antiice(state, 2)
+          aircraft.engine.antiice(state, 3)
+          aircraft.engine.antiice(state, 4)
+        else
+          if state == "on" then
+            command_once("toliss_airbus/antiicecommands/ENG" .. engine .. "On")
+            -- logMsg("toliss_airbus/antiicecommands/ENG" .. engine .. "On")
+          elseif state == "off" then
+            command_once("toliss_airbus/antiicecommands/ENG" .. engine .. "Off")
+            -- logMsg("toliss_airbus/antiicecommands/ENG" .. engine .. "Off")
+          end
+        end
+        if engine == "all" then engine = 1 end
+        return get("AirbusFBW/ENG" .. engine .. "AISwitch") > 0.5
+      end
+      aircraft.controls.speedbrake = function(state)
+        if state == "down" then
+          command_end("toliss_airbus/speedbrake/hold_armed")
+          set("sim/cockpit2/controls/speedbrake_ratio", 0)
+        elseif state == "arm" then
+          command_begin("toliss_airbus/speedbrake/hold_armed")
+        else
+          command_end("toliss_airbus/speedbrake/hold_armed")
+          set("sim/cockpit2/controls/speedbrake_ratio", state)
+        end
+        return get("sim/cockpit2/controls/speedbrake_ratio")
+      end
+      aircraft.on_frame.speedbrake = function()
+        if tca ~= nil then
+          -- Control speedbrake lever
+          if tca.axis.speedbrake < 0.125 and speedbrake_prev ~= 0 then
+            speedbrake_prev = 0
+            aircraft.controls.speedbrake("down")
+          elseif tca.axis.speedbrake >= 0.125 and tca.axis.speedbrake < 0.375 and speedbrake_prev ~= 1 then
+            speedbrake_prev = 1
+            aircraft.controls.speedbrake("arm")
+          elseif tca.axis.speedbrake >= 0.375 and tca.axis.speedbrake < 0.50 then
+            speedbrake_prev = 2
+            aircraft.controls.speedbrake(0.0 + (0.50 - 0.0) * (tca.axis.speedbrake - 0.375) / (0.50 - 0.375))
+          elseif tca.axis.speedbrake >= 0.50  then
+            speedbrake_prev = 2
+            aircraft.controls.speedbrake(tca.axis.speedbrake)
+          end
+        end
+      end
+      aircraft.apu = function(state)
+        if state == "on" then
+          command_once("toliss_airbus/apucommands/MasterOn")
+        elseif state == "off" then
+          command_once("toliss_airbus/apucommands/MasterOff")
+        elseif state == "start" then
+          command_once("toliss_airbus/apucommands/StarterOn")
+        end
+        return get("sim/cockpit/engine/APU_switch")
+      end
+      aircraft.controls.wiper = function(state)
+        if state == "on" then
+          set("AirbusFBW/LeftWiperSwitch", 2)
+          set("AirbusFBW/RightWiperSwitch", 2)
+        elseif state == "off" then
+          set("AirbusFBW/LeftWiperSwitch", 0)
+          set("AirbusFBW/RightWiperSwitch", 0)
+        elseif state == "incr" then
+          local next = get("AirbusFBW/LeftWiperSwitch") + 1
+          if next > 2 then next = 2 end
+          set("AirbusFBW/LeftWiperSwitch", next)
+          set("AirbusFBW/RightWiperSwitch", next)
+        elseif state == "decr" then
+          local next = get("AirbusFBW/LeftWiperSwitch") - 1
+          if next < 0 then next = 0 end
+          set("AirbusFBW/LeftWiperSwitch", next)
+          set("AirbusFBW/RightWiperSwitch", next)
+        end
+      end
+      aircraft.xpdr = function(mode)
+        if mode == "altoff" then
+          set("AirbusFBW/XPDRTCASMode", 0)
+          set("AirbusFBW/XPDRPower", 2)
+          set("AirbusFBW/XPDRAltitude", 0)
+        elseif mode == "alton" then
+          set("AirbusFBW/XPDRTCASMode", 0)
+          set("AirbusFBW/XPDRPower", 2)
+          set("AirbusFBW/XPDRAltitude", 1)
+        elseif mode == "ta" then
+          set("AirbusFBW/XPDRTCASMode", 1)
+          set("AirbusFBW/XPDRPower", 2)
+          set("AirbusFBW/XPDRAltitude", 1)
+        elseif mode == "tara" then
+          set("AirbusFBW/XPDRTCASMode", 2)
+          set("AirbusFBW/XPDRPower", 2)
+          set("AirbusFBW/XPDRAltitude", 1)
+        elseif mode == "stdby" then
+          set("AirbusFBW/XPDRTCASMode", 0)
+          set("AirbusFBW/XPDRPower", 0)
+          set("AirbusFBW/XPDRAltitude", 0)
+        end
+        local mode_name = {"stdby", "altoff", "alton", "ta", "tara"}
+        return mode_name[get("AirbusFBW/XPDRPower") + 1]
+      end
+      aircraft.wxr = function(state)
+        if state == "on" then
+          if get("AirbusFBW/WXPowerSwitch") > 0 then
+            command_once("toliss_airbus/WXRadarSwitchLeft")
+          end
+          set("AirbusFBW/WXSwitchPWS", 1)
+        elseif state == "off" then
+          if get("AirbusFBW/WXPowerSwitch") < 1 then
+            command_once("toliss_airbus/WXRadarSwitchRight")
+          end
+          set("AirbusFBW/WXSwitchPWS", 0)
+        end
+        return get("AirbusFBW/WXPowerSwitch") ~= 1
+      end
+      aircraft.on_frame.autobrake = function()
+        if tca ~= nil then
+          if autobrake_state ~= aircraft.a346.autobrake_state then
+            if autobrake_state == AB_DISARM then
+              command_once("sim/flight_controls/brakes_off_auto")
+              if get("AirbusFBW/AutoBrkMax") > 0.5 then command_once("AirbusFBW/AbrkMax") end
+            -- elseif autobrake_state == AB_LO then
+            --   command_once("sim/flight_controls/brakes_rto_auto")
+            --   if get("AirbusFBW/AutoBrkMax") > 0.5 then command_once("AirbusFBW/AbrkMax") end
+            elseif autobrake_state >= AB_LO and autobrake_state <= AB_3 then
+              command_once("sim/flight_controls/brakes_" .. (autobrake_state - 1) .. "_auto")
+              if get("AirbusFBW/AutoBrkMax") > 0.5 then command_once("AirbusFBW/AbrkMax") end
+            elseif autobrake_state == AB_HI then
+              command_once("sim/flight_controls/brakes_max_auto")
+              if get("AirbusFBW/AutoBrkMax") > 0.5 then command_once("AirbusFBW/AbrkMax") end
+            elseif autobrake_state == AB_BTV then
+              command_once("sim/flight_controls/brakes_off_auto")
+              if get("AirbusFBW/AutoBrkMax") < 0.5 then command_once("AirbusFBW/AbrkMax") end
+            end
+            aircraft.a346.autobrake_state = autobrake_state
+          end
+        end
+      end
+      aircraft.engine.starter = {}
+      for i = 1, 4 do
+        aircraft.engine.starter[i] = function(state)
+          if state == "on" then
+            command_once("sim/starters/engage_starter_" .. i)
+          elseif state == "off" then
+            command_once("sim/starters/shut_down_" .. i)
+          end
+          return get("AirbusFBW/ENG" .. i .. "MasterSwitch") > 0.5
+        end
+      end
+      -- aircraft.on_frame.debug = function()
+      --   logMsg(get("AirbusFBW/ENG1AISwitch"))
+      --   for i = 1, 10 do
+      --     logMsg(i .. ": " .. get("AirbusFBW/ATA25SeatSliders", i))
+      --   end
+      -- end
+    end
+
+
     if PLANE_ICAO == "B732" then
       aircraft.lights.beacon = function(state)
         if state == "on" then
@@ -1247,3 +1475,17 @@ end
 create_command("aircraft/s2_or_aice",
     "Start 2 or Anti-Ice Toggle",
     "aircraft_s2_or_aice()", "", "")
+
+
+create_command("aircraft/engine/start_outboard",
+    "Start outboard engines",
+    "aircraft.engine.starter[1]('on'); aircraft.engine.starter[4]('on')", "", "")
+create_command("aircraft/engine/stop_outboard",
+    "Stop outboard engines",
+    "aircraft.engine.starter[1]('off'); aircraft.engine.starter[4]('off')", "", "")
+create_command("aircraft/engine/start_inboard",
+    "Start inboard engines",
+    "aircraft.engine.starter[2]('on'); aircraft.engine.starter[3]('on')", "", "")
+create_command("aircraft/engine/stop_inboard",
+    "Stop inboard engines",
+    "aircraft.engine.starter[2]('off'); aircraft.engine.starter[3]('off')", "", "")
